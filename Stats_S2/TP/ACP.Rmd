@@ -1,0 +1,75 @@
+---
+title: "ACP"
+author: "LEMAIRE Guillaume"
+date: "09/02/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+load("nutrimouse.rda")
+install.packages("FactorMineR")
+library("FactorMineR")
+install.packages("factoextra")
+library("factoextra")
+```
+
+## 2.0 
+
+# 1) Variable active = gene / variable supp = genotype, diet
+
+# 2) Il faut toujours centrer les données, mais pas obligatoire pour la réduction
+
+# 3)
+```{r}
+data <- cbind(nutrimouse$gene, nutrimouse$genotype, nutrimouse$diet)
+res <- PCA(data, quali.sup=c(121,122), scale.unit=TRUE)
+```
+
+## 2.1
+# 4)
+```{r}
+fviz_eig(res, addlabels=TRUE, main="Pourcentage d'inertie expliqué par chaque axe")
+```
+
+## 2.2
+# 5)
+```{r}
+fviz_pca_ind(res, habillage=121)
+```
+
+# 6)
+```{r}
+fviz_pca_ind(res, habillage=122)
+```
+
+# 7)
+```{r}
+fviz_contrib(res, choice="ind")
+```
+```{r}
+fviz_pca_ind(res, select.ind=list(contrib=sum(res$ind$contrib[,1]>2.5)))
+```
+
+```{r}
+fviz_pca_ind(res, habillage=122, select.ind=list(contrib=sum(res$ind$contrib[,1]>2.5)))
+```
+
+```{r}
+fviz_contrib(res, choice="var")
+```
+
+```{r}
+fviz_pca_ind(res, select.ind=list(contrib=sum(res$var$contrib[,1]>0.8)))
+```
+
+## 2.3
+# 8)
+```{r}
+dimdescrip <- dimdesc(res, axes=1:2)
+rmarkdown::paged_table(data.frame(dimdescrip$Dim.1$quanti[dimdescrip$Dim.1$quanti[,1]>0.6]))
+```
+
